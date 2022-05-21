@@ -48,7 +48,7 @@ const Betting = ({ wallet, web3, contract, contractAddress, balance, setBalance 
         setBetAmount(amount);
     }
 
-    const onBetClicked = () => {
+    const onBetClicked = async () => {
         if (hound.length == 0) {
             return alert('PLEASE SELECT WHAT YOU LIKE.');
         }
@@ -61,10 +61,12 @@ const Betting = ({ wallet, web3, contract, contractAddress, balance, setBalance 
         let amount = web3.utils.toWei(betAmount.toString());
 
         //Send bet to the contract and wait for the verdict
+
+        //Send bet to the contract and wait for the verdict
         contract.methods.game(bet, randomSeed).send({ from: wallet, value: amount }).on('transactionHash', (hash) => {
             setLoading(1);
-            // contract.events.Result({}, async (error, event) => {
-            contract.once('Result', {}, async (error, event) => {
+            contract.events.Result({}, async (error, event) => {
+            // contract.once('Result', {}, async (error, event) => {
                 const verdict = event.returnValues.winAmount;
                 let index = Math.floor(Math.random() * 100) % 3 + 1;
                 if (verdict === '0') {
